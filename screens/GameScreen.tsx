@@ -28,7 +28,7 @@ const GameScreen = () => {
 
   useEffect(() => {
     loadHighScore();
-    startNewLevel();
+    resetGame();
   }, []);
 
   const loadHighScore = async () => {
@@ -39,6 +39,15 @@ const GameScreen = () => {
   const saveHighScore = async (score: number) => {
     await AsyncStorage.setItem('highScore', score.toString());
     setHighScore(score);
+  };
+
+  const resetGame = () => {
+    const newColor = colors[Math.floor(Math.random() * colors.length)];
+    const newSeq = [newColor]; // Começa com apenas uma cor
+    setSequence(newSeq);
+    setUserSequence([]);
+    setIsPlaying(true);
+    playSequence(newSeq);
   };
 
   const startNewLevel = () => {
@@ -108,8 +117,7 @@ const GameScreen = () => {
       if (currentScore > highScore) saveHighScore(currentScore);
       setLevel(1);
       setCurrentScore(0);
-      setSequence([]);
-      setTimeout(() => startNewLevel(), 1000);
+      setTimeout(() => resetGame(), 1000);
       return;
     }
 
@@ -148,7 +156,7 @@ const GameScreen = () => {
             disabled={isPlaying}
           />
         </Animated.View>
-        <Animated.View style={[styles.button, { backgroundColor: 'yellow', opacity: yellowOpacity }]}>
+        <Animated.View style={[styles.button, { backgroundColor: 'orange', opacity: yellowOpacity }]}>
           <TouchableOpacity
             style={styles.buttonTouchable}
             onPress={() => handlePress('yellow')}
@@ -161,12 +169,27 @@ const GameScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  level: { fontSize: 20, marginBottom: 10 },
-  score: { fontSize: 16, marginBottom: 5 },
-  buttonContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
-  button: { width: 100, height: 100, margin: 10, borderRadius: 10 },
-  buttonTouchable: { width: '100%', height: '100%', borderRadius: 10 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' },
+  level: { fontSize: 24, marginBottom: 15, fontWeight: 'bold', color: '#333' },
+  score: { fontSize: 16, marginBottom: 8, color: '#666' },
+  buttonContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 20 },
+  button: { 
+    width: 110, 
+    height: 110, 
+    margin: 8, 
+    borderRadius: 15,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  buttonTouchable: { width: '100%', height: '100%', borderRadius: 13 },
 });
 
 export default GameScreen;
