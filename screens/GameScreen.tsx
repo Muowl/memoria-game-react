@@ -60,17 +60,43 @@ const GameScreen = () => {
   };
 
   const playSequence = async (seq: string[]) => {
-    for (let color of seq) {
+    for (let i = 0; i < seq.length; i++) {
+      const color = seq[i];
       await playSound(color);
       await flashColor(color);
-      await delay(300);  // Pausa entre cores
+      
+      // Pausa entre cores - um pouco maior para garantir que o som termine
+      if (i < seq.length - 1) { // Não fazer pausa após a última cor
+        await delay(600); // Aumentado de 300ms para 600ms
+      }
     }
     setIsPlaying(false);
   };
 
   const playSound = async (color: string) => {
-    const { sound } = await Audio.Sound.createAsync(sounds[color]);
-    await sound.playAsync();
+    try {
+      const { sound } = await Audio.Sound.createAsync(sounds[color]);
+      
+      // Configurar o som para não repetir e controlar duração
+      await sound.setPositionAsync(0);
+      await sound.setVolumeAsync(1.0);
+      
+      // Tocar o som
+      await sound.playAsync();
+      
+      // Aguardar no máximo 1.4 segundos e depois liberar
+      setTimeout(async () => {
+        try {
+          await sound.stopAsync();
+          await sound.unloadAsync();
+        } catch (error) {
+          // Ignorar erros de cleanup
+        }
+      }, 1400);
+      
+    } catch (error) {
+      console.error('Erro ao tocar som:', error);
+    }
   };
 
   const flashColor = (color: string) => {
@@ -113,11 +139,21 @@ const GameScreen = () => {
     setUserSequence(newUserSeq);
 
     if (newUserSeq[newUserSeq.length - 1] !== sequence[newUserSeq.length - 1]) {
-      Alert.alert('Erro!', 'Sequência incorreta. Tente novamente!');
-      if (currentScore > highScore) saveHighScore(currentScore);
-      setLevel(1);
-      setCurrentScore(0);
-      setTimeout(() => resetGame(), 1000);
+      Alert.alert(
+        'Erro!',
+        'Sequência incorreta. Tente novamente!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              if (currentScore > highScore) saveHighScore(currentScore);
+              setLevel(1);
+              setCurrentScore(0);
+              resetGame();
+            }
+          }
+        ]
+      );
       return;
     }
 
