@@ -144,7 +144,7 @@ const GameScreen = () => {
         'Sequência incorreta. Tente novamente!',
         [
           {
-            text: 'OK',
+            text: 'Iniciar novo jogo!',
             onPress: () => {
               if (currentScore > highScore) saveHighScore(currentScore);
               setLevel(1);
