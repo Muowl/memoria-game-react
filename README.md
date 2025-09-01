@@ -52,7 +52,7 @@ O projeto foi criado como **atividade de extensão acadêmica** na disciplina **
 
 ### Pré-requisitos
 
-- **Node.js LTS 22.19.0** (recomendado)
+- **Node.js LTS 22.19.0** (versão usada no desenvolvimento e recomendado)
 - **Expo CLI** instalado globalmente
 - **Dispositivo Android** ou emulador para testes
 
